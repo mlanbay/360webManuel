@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>XR Manuel</title>
+    <meta name="description" content="360 Image and Model">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
+    
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #button-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Contenedor para el bot�n -->
+    <div id="button-container">
+      <button id="changeBackground">Cambiar Fondo</button>
+    </div>
+
+    <a-scene>
+      <!-- Fondo 360� usando la imagen inicial -->
+      <a-sky id="sky" src="images\atlantis.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Avatar en el centro de la escena -->
+      <a-assets timeout="30000">
+        <a-asset-item id="personajeModel" src="Manuel_Saludando_001.glb" response-type="arraybuffer"></a-asset-item>
+      </a-assets>
+      
+      <a-camera position="0 1 2"></a-camera>
+
+      <a-entity id="personajeEntidad" position="0 0 -3" scale="1 1 1">
+        <a-entity position="0 0 0" rotation="0 0 0"
+                  gltf-model="#personajeModel"
+                  animation-mixer
+                  shadow="cast: true; receive: false"></a-entity>
+      </a-entity>
+
+      <!-- Iluminaci�n -->
+      <a-entity light="type: ambient; intensity: 0.5;"></a-entity>
+      <a-light type="directional"
+               light="castShadow: true;
+                      shadowMapHeight: 1024;
+                      shadowMapWidth: 1024;
+                      shadowCameraLeft: -7;
+                      shadowCameraRight: 5;
+                      shadowCameraBottom: -5;
+                      shadowCameraTop: 5;"
+               id="light"
+               target="personajeEntidad"
+               position="-5 3 1.5"></a-light>
+
+      <!-- Plane que recibe sombras (solo en AR) -->
+      <a-plane height="15" width="15" position="0 0 -3" rotation="-90 0 0"
+               shadow="receive: true"
+               visible="false"></a-plane>
+    </a-scene>
+
+    <script>
+      // Array con las im�genes de fondo
+      const backgrounds = [
+        'images/patioColegio.JPG',
+        'images/french comic.jpg',
+        'images/atlantis.jpg'
+        
+      ];
+
+      // �ndice inicial
+      let currentIndex = 0;
+
+      // Referencia al elemento 'a-sky'
+      const skyElement = document.getElementById('sky');
+
+      // Evento del bot�n para alternar entre las im�genes
+      document.getElementById('changeBackground').addEventListener('click', function () {
+        // Incrementar el �ndice y asegurarse de que vuelva al inicio al alcanzar el final
+        currentIndex = (currentIndex + 1) % backgrounds.length;
+
+        // Cambiar el atributo 'src' del elemento 'a-sky'
+        skyElement.setAttribute('src', backgrounds[currentIndex]);
+      });
+    </script>
+  </body>
+</html>
